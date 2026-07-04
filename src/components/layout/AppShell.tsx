@@ -5,6 +5,7 @@ import { Menu } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { WelcomeOverlay } from './WelcomeOverlay';
 import { CommandPalette } from '../palette/CommandPalette';
+import { CelebrationBanner } from '../ui/CelebrationBanner';
 import { NAV_ITEMS, SETTINGS_ITEM } from '@/lib/nav';
 import { useSettingsStore } from '@/store/settings';
 
@@ -112,6 +113,7 @@ export function AppShell() {
       </div>
 
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <CelebrationBanner />
     </div>
   );
 }

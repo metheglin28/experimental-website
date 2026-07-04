@@ -40,10 +40,13 @@ backup any time from **Settings**.
     streak.
   - Custom categories can be added inline from any transaction/recurring
     form; each gets a stable, deterministic color.
-- **Settings** — theme (light/dark/system), accent color, currency, and
-  full data export/import/reset.
+- **Settings** — theme (light/dark/system), accent color (Honey / Ember /
+  Moss / Frost), currency, and full data export/import/reset.
 - **Command palette** (`⌘K` / `Ctrl+K`) — jump to any page or run an
   action without touching the mouse.
+- A few Nordic/RPG winks, since "Meadhall" already leans that way: original
+  loading-screen tips while a page chunk loads, and a "Skill increased!"
+  banner when a habit streak or savings goal hits a milestone.
 
 ## Tech stack
 

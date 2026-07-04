@@ -7,7 +7,7 @@ export function GoalsList() {
   const goals = useFinanceStore((s) => s.goals);
 
   if (goals.length === 0) {
-    return <EmptyState icon={PiggyBank} title="No savings goals yet" description="Set a target — an emergency fund, a trip, a new laptop — and chip away at it." />;
+    return <EmptyState icon={PiggyBank} title="No hoards started yet" description="Set a target — an emergency fund, a trip, a new laptop — and start stacking your hoard." />;
   }
 
   return (

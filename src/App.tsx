@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
+import { randomLoadingTip } from '@/lib/loadingTips';
 
 const Dashboard = lazy(() => import('@/pages/Dashboard').then((m) => ({ default: m.Dashboard })));
 const Tasks = lazy(() => import('@/pages/Tasks').then((m) => ({ default: m.Tasks })));
@@ -14,9 +15,11 @@ const Settings = lazy(() => import('@/pages/Settings').then((m) => ({ default: m
 const NotFound = lazy(() => import('@/pages/NotFound').then((m) => ({ default: m.NotFound })));
 
 function PageFallback() {
+  const [tip] = useState(randomLoadingTip);
   return (
-    <div className="flex h-64 items-center justify-center">
+    <div className="flex h-64 flex-col items-center justify-center gap-3">
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-honey-300 border-t-honey-500" />
+      <p className="text-xs italic text-ink-400">{tip}</p>
     </div>
   );
 }

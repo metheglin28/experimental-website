@@ -22,7 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, hint: 'Overview of your day' },
   { to: '/tasks', label: 'Tasks', icon: CheckSquare, hint: 'Quests & to-dos' },
   { to: '/notes', label: 'Notes', icon: NotebookPen, hint: 'Scrolls & ideas' },
-  { to: '/habits', label: 'Habits', icon: Flame, hint: 'Daily rituals & streaks' },
+  { to: '/habits', label: 'Habits', icon: Flame, hint: 'Skills & streaks' },
   { to: '/focus', label: 'Focus', icon: Timer, hint: 'Hearth timer' },
   { to: '/journal', label: 'Journal', icon: BookHeart, hint: 'Moods & reflections' },
   { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark, hint: 'The library' },

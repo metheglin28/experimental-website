@@ -43,6 +43,17 @@
   --color-moss-900: #263a18;
   --color-moss-950: #16220e;
 
+  --color-frost-50: #eff9fc;
+  --color-frost-100: #d7f0f8;
+  --color-frost-200: #b0e1f1;
+  --color-frost-300: #7ecfe8;
+  --color-frost-400: #4ab8db;
+  --color-frost-500: #2a9dc4;
+  --color-frost-600: #1f7fa3;
+  --color-frost-700: #1c6483;
+  --color-frost-900: #163f52;
+  --color-frost-950: #0d2530;
+
   --color-ink-50: #f7f5f2;
   --color-ink-100: #ece7e0;
   --color-ink-200: #d8cfc2;
@@ -103,6 +114,18 @@
   --color-honey-700: var(--color-moss-700);
   --color-honey-900: var(--color-moss-900);
   --color-honey-950: var(--color-moss-950);
+}
+:root[data-accent='frost'] {
+  --color-honey-50: var(--color-frost-50);
+  --color-honey-100: var(--color-frost-100);
+  --color-honey-200: var(--color-frost-200);
+  --color-honey-300: var(--color-frost-300);
+  --color-honey-400: var(--color-frost-400);
+  --color-honey-500: var(--color-frost-500);
+  --color-honey-600: var(--color-frost-600);
+  --color-honey-700: var(--color-frost-700);
+  --color-honey-900: var(--color-frost-900);
+  --color-honey-950: var(--color-frost-950);
 }
 
 @layer base {

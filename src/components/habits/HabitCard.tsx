@@ -5,7 +5,7 @@ import { useHabitsStore, computeStreak, computeBestStreak, type Habit } from '@/
 import { HabitHeatmap } from './HabitHeatmap';
 import { SWATCH_DOT, SWATCH_TEXT } from '@/lib/colors';
 import { dayKey } from '@/lib/date';
-import { celebrate, STREAK_MILESTONES } from '@/lib/celebrate';
+import { celebrateWithMessage, STREAK_MILESTONES } from '@/lib/celebrate';
 
 export function HabitCard({ habit }: { habit: Habit }) {
   const toggleCheckin = useHabitsStore((s) => s.toggleCheckin);
@@ -20,7 +20,7 @@ export function HabitCard({ habit }: { habit: Habit }) {
   function handleMarkDone() {
     if (!doneToday) {
       const newStreak = computeStreak({ ...habit.checkins, [today]: true });
-      if (STREAK_MILESTONES.includes(newStreak)) celebrate();
+      if (STREAK_MILESTONES.includes(newStreak)) celebrateWithMessage(`Skill increased! ${newStreak}-day streak`);
     }
     toggleCheckin(habit.id);
   }

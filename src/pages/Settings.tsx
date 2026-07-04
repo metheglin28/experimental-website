@@ -3,7 +3,6 @@ import { Sun, Moon, Laptop, Download, Upload, Trash2, ShieldCheck, Check } from 
 import clsx from 'clsx';
 import { useSettingsStore, CURRENCIES, type ThemeMode, type Accent } from '@/store/settings';
 import { downloadBackup, importBackup, wipeAllData } from '@/lib/backup';
-import { SWATCH_DOT } from '@/lib/colors';
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'light', label: 'Light', icon: Sun },
@@ -11,10 +10,11 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Laptop },
 ];
 
-const ACCENT_OPTIONS: { value: Accent; label: string }[] = [
-  { value: 'honey', label: 'Honey' },
-  { value: 'ember', label: 'Ember' },
-  { value: 'moss', label: 'Moss' },
+const ACCENT_OPTIONS: { value: Accent; label: string; dot: string }[] = [
+  { value: 'honey', label: 'Honey', dot: 'bg-honey-400' },
+  { value: 'ember', label: 'Ember', dot: 'bg-ember-400' },
+  { value: 'moss', label: 'Moss', dot: 'bg-moss-400' },
+  { value: 'frost', label: 'Frost', dot: 'bg-frost-400' },
 ];
 
 export function Settings() {
@@ -110,7 +110,7 @@ export function Settings() {
         <div>
           <p className="mb-2 text-xs font-medium text-ink-500">Accent color</p>
           <div className="flex gap-3">
-            {ACCENT_OPTIONS.map(({ value, label }) => (
+            {ACCENT_OPTIONS.map(({ value, label, dot }) => (
               <button
                 key={value}
                 onClick={() => setAccent(value)}
@@ -120,7 +120,7 @@ export function Settings() {
                 <span
                   className={clsx(
                     'flex h-9 w-9 items-center justify-center rounded-full ring-offset-2 ring-offset-white transition dark:ring-offset-ink-900',
-                    SWATCH_DOT[value],
+                    dot,
                     accent === value && 'ring-2 ring-ink-900 dark:ring-honey-50',
                   )}
                 >

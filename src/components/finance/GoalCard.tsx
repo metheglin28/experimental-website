@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useFinanceStore, formatCurrency, type SavingsGoal } from '@/store/finance';
 import { useSettingsStore } from '@/store/settings';
 import { SWATCH_DOT } from '@/lib/colors';
-import { celebrate } from '@/lib/celebrate';
+import { celebrateWithMessage } from '@/lib/celebrate';
 
 export function GoalCard({ goal }: { goal: SavingsGoal }) {
   const contributeToGoal = useFinanceStore((s) => s.contributeToGoal);
@@ -22,7 +22,7 @@ export function GoalCard({ goal }: { goal: SavingsGoal }) {
     const value = Number(amount);
     if (!value) return;
     const justCompleted = contributeToGoal(goal.id, value);
-    if (justCompleted) celebrate();
+    if (justCompleted) celebrateWithMessage(`Hoard complete: ${goal.name}!`);
     setAmount('');
     setAdding(false);
   }

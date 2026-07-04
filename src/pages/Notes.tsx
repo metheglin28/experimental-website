@@ -123,7 +123,7 @@ export function Notes() {
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState icon={NotebookPen} title="No notes here" description="Start a new one and it'll show up in this list." />
+          <EmptyState icon={NotebookPen} title="No scrolls here yet" description="Start a new one and it'll show up in this list." />
         ) : (
           <div className="flex flex-col gap-1 overflow-y-auto">
             {filtered.map((n) => (

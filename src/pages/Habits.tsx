@@ -27,7 +27,7 @@ export function Habits() {
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-ink-500">
-          {habits.length} ritual{habits.length === 1 ? '' : 's'} in progress
+          {habits.length} skill{habits.length === 1 ? '' : 's'} in training
         </p>
         <button onClick={() => setModalOpen(true)} className="btn-primary">
           <Plus className="h-4 w-4" />
@@ -38,8 +38,8 @@ export function Habits() {
       {habits.length === 0 ? (
         <EmptyState
           icon={Flame}
-          title="No habits yet"
-          description="Start a daily ritual — even small ones compound into streaks."
+          title="No skills trained yet"
+          description="Every skill tree starts with a single rep — even small ones compound into streaks."
           action={
             <button onClick={() => setModalOpen(true)} className="btn-primary mt-1">
               <Plus className="h-4 w-4" /> New habit

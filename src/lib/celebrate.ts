@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import { useCelebrationStore } from '@/store/celebration';
 
 const BRAND_COLORS = ['#f2900e', '#f6ab33', '#6f9d43', '#e2532f'];
 
@@ -26,14 +27,11 @@ export function celebrate(): void {
   })();
 }
 
-export function celebrateBurst(): void {
-  confetti({
-    particleCount: 60,
-    spread: 70,
-    startVelocity: 35,
-    origin: { x: 0.5, y: 0.4 },
-    colors: BRAND_COLORS,
-  });
+/** Fires the confetti and a brief banner — for rarer, more deserving
+ * moments (milestones, completions) than the routine daily-clear. */
+export function celebrateWithMessage(message: string): void {
+  celebrate();
+  useCelebrationStore.getState().show(message);
 }
 
 export const STREAK_MILESTONES = [7, 14, 30, 50, 100, 200, 365];

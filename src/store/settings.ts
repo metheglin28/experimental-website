@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
-export type Accent = 'honey' | 'ember' | 'moss';
+export type Accent = 'honey' | 'ember' | 'moss' | 'frost';
 export const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'] as const;
 export type Currency = (typeof CURRENCIES)[number];
 
