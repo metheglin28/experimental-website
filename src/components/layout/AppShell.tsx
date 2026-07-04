@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu } from 'lucide-react';
@@ -8,16 +8,42 @@ import { CommandPalette } from '../palette/CommandPalette';
 import { CelebrationBanner } from '../ui/CelebrationBanner';
 import { NAV_ITEMS, SETTINGS_ITEM } from '@/lib/nav';
 import { useSettingsStore } from '@/store/settings';
+import { useTasksStore, selectTodayTasks } from '@/store/tasks';
+import { dayKey } from '@/lib/date';
+import { notify } from '@/lib/notify';
 
 export function AppShell() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const hasOnboarded = useSettingsStore((s) => s.hasOnboarded);
+  const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
+  const lastTaskReminderDay = useSettingsStore((s) => s.lastTaskReminderDay);
+  const setLastTaskReminderDay = useSettingsStore((s) => s.setLastTaskReminderDay);
+  const tasks = useTasksStore((s) => s.tasks);
+  const notifiedDayRef = useRef<string | null>(null);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!notificationsEnabled) return;
+    const today = dayKey();
+    if (lastTaskReminderDay === today || notifiedDayRef.current === today) return;
+    const dueToday = selectTodayTasks(tasks);
+    if (dueToday.length === 0) return;
+    notifiedDayRef.current = today;
+    notify(`${dueToday.length} task${dueToday.length === 1 ? '' : 's'} due today`, {
+      body: dueToday
+        .slice(0, 3)
+        .map((t) => t.title)
+        .join(', '),
+    });
+    setLastTaskReminderDay(today);
+    // Only re-check once per calendar day, not on every task-list edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notificationsEnabled, lastTaskReminderDay]);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {

@@ -15,8 +15,9 @@ backup any time from **Settings**.
   translation, today's tasks, habit check-ins, upcoming items, and recent
   notes.
 - **Tasks** — projects, priorities, due dates, quick-add, smart views
-  (Today / Upcoming / Completed), and a badge linking to any note that
-  references the task.
+  (Today / Upcoming / Completed), drag-and-drop reordering, daily/weekly/
+  monthly repeating tasks, and a badge linking to any note that references
+  the task.
 - **Notes** — folders, tags, full-text search, a Markdown editor with live
   preview, and an optional link to a task.
 - **Habits** — daily check-ins, current/best streaks, and a GitHub-style
@@ -44,7 +45,9 @@ backup any time from **Settings**.
   - Custom categories can be added inline from any transaction/recurring
     form; each gets a stable, deterministic color.
 - **Settings** — theme (light/dark/system), accent color (Honey / Ember /
-  Moss / Frost), currency, and full data export/import/reset.
+  Moss / Frost), currency, browser notifications (focus-session alerts and
+  a once-a-day tasks-due-today nudge, while the app is open), and full data
+  export/import/reset.
 - **Command palette** (`⌘K` / `Ctrl+K`) — jump to any page, run an action,
   or search across tasks, notes, journal entries, and bookmarks by content.
 - A few Nordic/RPG winks, since "Meadhall" already leans that way: original

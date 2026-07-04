@@ -12,11 +12,15 @@ interface SettingsState {
   displayName: string;
   currency: Currency;
   hasOnboarded: boolean;
+  notificationsEnabled: boolean;
+  lastTaskReminderDay: string | null;
   setThemeMode: (mode: ThemeMode) => void;
   setAccent: (accent: Accent) => void;
   setDisplayName: (name: string) => void;
   setCurrency: (currency: Currency) => void;
   completeOnboarding: () => void;
+  setNotificationsEnabled: (enabled: boolean) => void;
+  setLastTaskReminderDay: (day: string) => void;
 }
 
 function applyThemeClass(mode: ThemeMode) {
@@ -36,6 +40,8 @@ export const useSettingsStore = create<SettingsState>()(
       displayName: '',
       currency: 'USD',
       hasOnboarded: false,
+      notificationsEnabled: false,
+      lastTaskReminderDay: null,
       setThemeMode: (mode) => {
         set({ themeMode: mode });
         applyThemeClass(mode);
@@ -47,6 +53,8 @@ export const useSettingsStore = create<SettingsState>()(
       setDisplayName: (displayName) => set({ displayName }),
       setCurrency: (currency) => set({ currency }),
       completeOnboarding: () => set({ hasOnboarded: true }),
+      setNotificationsEnabled: (notificationsEnabled) => set({ notificationsEnabled }),
+      setLastTaskReminderDay: (lastTaskReminderDay) => set({ lastTaskReminderDay }),
     }),
     {
       name: 'meadhall:settings',

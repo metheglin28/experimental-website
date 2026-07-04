@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { Sun, Moon, Laptop, Download, Upload, Trash2, ShieldCheck, Check } from 'lucide-react';
+import { Sun, Moon, Laptop, Download, Upload, Trash2, ShieldCheck, Check, Bell } from 'lucide-react';
 import clsx from 'clsx';
 import { useSettingsStore, CURRENCIES, type ThemeMode, type Accent } from '@/store/settings';
 import { downloadBackup, importBackup, wipeAllData } from '@/lib/backup';
+import { notificationsSupported, notificationPermission, requestNotificationPermission, notify } from '@/lib/notify';
 
 const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'light', label: 'Light', icon: Sun },
@@ -22,11 +23,38 @@ const ACCENT_OPTIONS: { value: Accent; label: string; hex: string }[] = [
 ];
 
 export function Settings() {
-  const { themeMode, setThemeMode, accent, setAccent, displayName, setDisplayName, currency, setCurrency } = useSettingsStore();
+  const {
+    themeMode,
+    setThemeMode,
+    accent,
+    setAccent,
+    displayName,
+    setDisplayName,
+    currency,
+    setCurrency,
+    notificationsEnabled,
+    setNotificationsEnabled,
+  } = useSettingsStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importMessage, setImportMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [confirmWipe, setConfirmWipe] = useState(false);
   const [justExported, setJustExported] = useState(false);
+  const [notifPermission, setNotifPermission] = useState(notificationPermission());
+
+  async function handleToggleNotifications() {
+    if (notificationsEnabled) {
+      setNotificationsEnabled(false);
+      return;
+    }
+    const result = await requestNotificationPermission();
+    setNotifPermission(result);
+    if (result === 'granted') {
+      setNotificationsEnabled(true);
+      notify('Notifications are on', {
+        body: "We'll let you know when a focus session ends, and nudge you once a day about tasks due today.",
+      });
+    }
+  }
 
   function handleExport() {
     downloadBackup();
@@ -135,6 +163,29 @@ export function Settings() {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="card flex flex-col gap-3 p-5">
+        <h3 className="font-display text-sm font-semibold text-ink-700 dark:text-ink-200">Notifications</h3>
+        <p className="text-xs text-ink-500">
+          Get a browser notification when a focus session ends, and a once-a-day nudge for tasks due today — only
+          while Meadhall is open in a tab. There's no push service, so nothing arrives while it's closed.
+        </p>
+        {!notificationsSupported() ? (
+          <p className="text-xs text-ink-400">Not supported in this browser.</p>
+        ) : notifPermission === 'denied' ? (
+          <p className="text-xs text-ember-600 dark:text-ember-400">
+            Notifications are blocked for this site. Allow them in your browser's site settings to turn this on.
+          </p>
+        ) : (
+          <button
+            onClick={handleToggleNotifications}
+            className={clsx('btn-secondary self-start', notificationsEnabled && '!bg-honey-400/25 !text-honey-800 dark:!text-honey-200')}
+          >
+            <Bell className="h-4 w-4" />
+            {notificationsEnabled ? 'Notifications on' : 'Turn on notifications'}
+          </button>
+        )}
       </div>
 
       <div className="card flex flex-col gap-4 p-5">

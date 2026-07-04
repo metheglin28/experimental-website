@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Flame } from 'lucide-react';
 import { useFocusStore, focusMinutesByDay, type Phase } from '@/store/focus';
+import { useSettingsStore } from '@/store/settings';
 import { TimerRing } from '@/components/focus/TimerRing';
 import { FocusHistoryChart } from '@/components/focus/FocusHistoryChart';
 import { dayKey } from '@/lib/date';
+import { notify } from '@/lib/notify';
+
+const PHASE_LABEL: Record<Phase, string> = {
+  focus: 'Focus',
+  'short-break': 'Short break',
+  'long-break': 'Long break',
+};
 
 function phaseSeconds(phase: Phase, s: ReturnType<typeof useFocusStore.getState>): number {
   if (phase === 'focus') return s.focusMinutes * 60;
@@ -41,6 +49,8 @@ export function Focus() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
+  const notificationsEnabled = useSettingsStore((s) => s.notificationsEnabled);
+
   function completePhase() {
     setRunning(false);
     if (phase === 'focus') {
@@ -49,10 +59,16 @@ export function Focus() {
       const next: Phase = completedToday % sessionsUntilLongBreak === 0 ? 'long-break' : 'short-break';
       setPhase(next);
       setRemaining(phaseSeconds(next, store));
+      if (notificationsEnabled) {
+        notify('Focus session complete', { body: `Time for a ${PHASE_LABEL[next].toLowerCase()}.` });
+      }
     } else {
       logSession(phase, phase === 'short-break' ? shortBreakMinutes : longBreakMinutes);
       setPhase('focus');
       setRemaining(phaseSeconds('focus', store));
+      if (notificationsEnabled) {
+        notify(`${PHASE_LABEL[phase]} over`, { body: 'Back to it — a new focus session is ready.' });
+      }
     }
   }
 
@@ -100,7 +116,7 @@ export function Focus() {
                 phase === p ? 'bg-honey-400/20 text-honey-800 dark:text-honey-200' : 'text-ink-400'
               }`}
             >
-              {p === 'focus' ? 'Focus' : p === 'short-break' ? 'Short break' : 'Long break'}
+              {PHASE_LABEL[p]}
             </button>
           ))}
         </div>
