@@ -3,13 +3,16 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu } from 'lucide-react';
 import { Sidebar } from './Sidebar';
+import { WelcomeOverlay } from './WelcomeOverlay';
 import { CommandPalette } from '../palette/CommandPalette';
 import { NAV_ITEMS, SETTINGS_ITEM } from '@/lib/nav';
+import { useSettingsStore } from '@/store/settings';
 
 export function AppShell() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const hasOnboarded = useSettingsStore((s) => s.hasOnboarded);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -32,6 +35,8 @@ export function AppShell() {
 
   return (
     <div className="min-h-svh md:flex">
+      {!hasOnboarded && <WelcomeOverlay />}
+
       {/* Desktop sidebar */}
       <aside className="hidden w-[264px] shrink-0 border-r border-ink-200/70 md:block dark:border-ink-800/70">
         <div className="sticky top-0 h-svh">

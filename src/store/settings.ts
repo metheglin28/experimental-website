@@ -11,10 +11,12 @@ interface SettingsState {
   accent: Accent;
   displayName: string;
   currency: Currency;
+  hasOnboarded: boolean;
   setThemeMode: (mode: ThemeMode) => void;
   setAccent: (accent: Accent) => void;
   setDisplayName: (name: string) => void;
   setCurrency: (currency: Currency) => void;
+  completeOnboarding: () => void;
 }
 
 function applyThemeClass(mode: ThemeMode) {
@@ -33,6 +35,7 @@ export const useSettingsStore = create<SettingsState>()(
       accent: 'honey',
       displayName: '',
       currency: 'USD',
+      hasOnboarded: false,
       setThemeMode: (mode) => {
         set({ themeMode: mode });
         applyThemeClass(mode);
@@ -43,6 +46,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
       setDisplayName: (displayName) => set({ displayName }),
       setCurrency: (currency) => set({ currency }),
+      completeOnboarding: () => set({ hasOnboarded: true }),
     }),
     {
       name: 'meadhall:settings',

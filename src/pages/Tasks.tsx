@@ -7,6 +7,7 @@ import { TaskItem } from '@/components/tasks/TaskItem';
 import { TaskFormModal } from '@/components/tasks/TaskFormModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { dayKey } from '@/lib/date';
+import { useCelebrateOnZero } from '@/lib/celebrate';
 
 function isProjectView(v: ViewFilter): v is { projectId: string } {
   return typeof v === 'object';
@@ -40,6 +41,8 @@ export function Tasks() {
     }
     return { all, today: todayCount, upcoming, completed, byProject };
   }, [tasks, today]);
+
+  useCelebrateOnZero(counts.today);
 
   const visible = useMemo(() => {
     let list: Task[];

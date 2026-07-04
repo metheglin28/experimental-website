@@ -5,6 +5,7 @@ import { useHabitsStore, computeStreak, computeBestStreak, type Habit } from '@/
 import { HabitHeatmap } from './HabitHeatmap';
 import { SWATCH_DOT, SWATCH_TEXT } from '@/lib/colors';
 import { dayKey } from '@/lib/date';
+import { celebrate, STREAK_MILESTONES } from '@/lib/celebrate';
 
 export function HabitCard({ habit }: { habit: Habit }) {
   const toggleCheckin = useHabitsStore((s) => s.toggleCheckin);
@@ -13,7 +14,16 @@ export function HabitCard({ habit }: { habit: Habit }) {
 
   const streak = computeStreak(habit.checkins);
   const best = computeBestStreak(habit.checkins);
-  const doneToday = !!habit.checkins[dayKey()];
+  const today = dayKey();
+  const doneToday = !!habit.checkins[today];
+
+  function handleMarkDone() {
+    if (!doneToday) {
+      const newStreak = computeStreak({ ...habit.checkins, [today]: true });
+      if (STREAK_MILESTONES.includes(newStreak)) celebrate();
+    }
+    toggleCheckin(habit.id);
+  }
 
   return (
     <div className="card flex flex-col gap-4 p-5">
@@ -46,7 +56,7 @@ export function HabitCard({ habit }: { habit: Habit }) {
       <HabitHeatmap checkins={habit.checkins} color={habit.color} onToggle={(day) => toggleCheckin(habit.id, day)} />
 
       <button
-        onClick={() => toggleCheckin(habit.id)}
+        onClick={handleMarkDone}
         className={clsx(
           'btn justify-center',
           doneToday ? 'bg-honey-500/15 text-honey-700 dark:text-honey-300' : 'btn-primary',

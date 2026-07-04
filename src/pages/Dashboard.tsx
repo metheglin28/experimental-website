@@ -10,6 +10,7 @@ import { StatTile } from '@/components/ui/StatTile';
 import { SWATCH_DOT } from '@/lib/colors';
 import { greeting, formatLong, formatFriendly, dayKey, formatTimeAgo } from '@/lib/date';
 import { quoteOfTheDay } from '@/lib/quotes';
+import { useCelebrateOnZero } from '@/lib/celebrate';
 
 export function Dashboard() {
   const tasks = useTasksStore((s) => s.tasks);
@@ -32,6 +33,8 @@ export function Dashboard() {
   const net = monthTotals(transactions, currentMonthKey()).income - monthTotals(transactions, currentMonthKey()).expense;
   const recentNotes = [...notes].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 3);
   const quote = quoteOfTheDay();
+
+  useCelebrateOnZero(todayTasks.length);
 
   return (
     <div className="flex flex-col gap-6">
