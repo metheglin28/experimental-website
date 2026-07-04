@@ -55,7 +55,7 @@ export function Dashboard() {
             </p>
           </div>
         </div>
-        <CornerBee size={18} />
+        <CornerBee size={25} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
