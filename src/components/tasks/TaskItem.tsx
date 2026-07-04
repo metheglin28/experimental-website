@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flag, Pencil, Trash2, CalendarDays } from 'lucide-react';
+import { Flag, Pencil, Trash2, CalendarDays, NotebookPen } from 'lucide-react';
 import clsx from 'clsx';
 import { useTasksStore, type Task } from '@/store/tasks';
+import { useNotesStore } from '@/store/notes';
 import { formatFriendly, isPast } from '@/lib/date';
 import { SWATCH_DOT } from '@/lib/colors';
 
@@ -20,6 +22,7 @@ export function TaskItem({ task, onEdit }: TaskItemProps) {
   const toggleTask = useTasksStore((s) => s.toggleTask);
   const deleteTask = useTasksStore((s) => s.deleteTask);
   const project = useTasksStore((s) => s.projects.find((p) => p.id === task.projectId));
+  const linkedNote = useNotesStore((s) => s.notes.find((n) => n.linkedTaskId === task.id));
   const overdue = task.dueDate && !task.done && isPast(task.dueDate);
 
   return (
@@ -67,6 +70,16 @@ export function TaskItem({ task, onEdit }: TaskItemProps) {
               <span className={clsx('h-1.5 w-1.5 rounded-full', SWATCH_DOT[project.color])} />
               {project.name}
             </span>
+          )}
+          {linkedNote && (
+            <Link
+              to={`/notes?note=${linkedNote.id}`}
+              className="inline-flex items-center gap-1 hover:text-honey-600 dark:hover:text-honey-400"
+              title={linkedNote.title || 'Untitled note'}
+            >
+              <NotebookPen className="h-3.5 w-3.5" />
+              Note
+            </Link>
           )}
         </div>
       </div>

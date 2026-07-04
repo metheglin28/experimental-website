@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { ArrowLeft, Eye, Pencil, Pin, PinOff, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, Pencil, Pin, PinOff, Trash2, Link as LinkIcon, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useNotesStore, type Note } from '@/store/notes';
+import { useTasksStore } from '@/store/tasks';
 import { formatTimeAgo } from '@/lib/date';
 
 interface NoteEditorProps {
@@ -16,6 +18,8 @@ export function NoteEditor({ note, onBack, onDelete }: NoteEditorProps) {
   const updateNote = useNotesStore((s) => s.updateNote);
   const togglePin = useNotesStore((s) => s.togglePin);
   const folders = useNotesStore((s) => s.folders);
+  const tasks = useTasksStore((s) => s.tasks);
+  const linkedTask = tasks.find((t) => t.id === note.linkedTaskId);
 
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
@@ -95,6 +99,42 @@ export function NoteEditor({ note, onBack, onDelete }: NoteEditorProps) {
             <Eye className="h-3 w-3" /> Preview
           </button>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 border-b border-ink-200/70 px-4 py-2 text-xs dark:border-ink-800/70">
+        <LinkIcon className="h-3.5 w-3.5 shrink-0 text-ink-400" />
+        {linkedTask ? (
+          <>
+            <Link
+              to={`/tasks?task=${linkedTask.id}`}
+              className={clsx('truncate text-honey-600 hover:underline dark:text-honey-400', linkedTask.done && 'line-through opacity-60')}
+            >
+              {linkedTask.title}
+            </Link>
+            <button
+              onClick={() => updateNote(note.id, { linkedTaskId: null })}
+              className="ml-auto shrink-0 text-ink-400 hover:text-ink-600 dark:hover:text-ink-200"
+              aria-label="Unlink task"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </>
+        ) : (
+          <select
+            value=""
+            onChange={(e) => e.target.value && updateNote(note.id, { linkedTaskId: e.target.value })}
+            className="w-full bg-transparent text-ink-400 outline-none"
+          >
+            <option value="">Link a task…</option>
+            {tasks
+              .filter((t) => !t.done)
+              .map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.title}
+                </option>
+              ))}
+          </select>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

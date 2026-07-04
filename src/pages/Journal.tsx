@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { useJournalStore, moodTrend, MOOD_EMOJI, MOOD_LABEL, type Mood } from '@/store/journal';
+import { useHabitsStore } from '@/store/habits';
 import { MiniCalendar } from '@/components/journal/MiniCalendar';
 import { MoodChart } from '@/components/journal/MoodChart';
 import { dayKey, formatLong } from '@/lib/date';
+import { SWATCH_DOT } from '@/lib/colors';
 
 const MOODS: Mood[] = [1, 2, 3, 4, 5];
 
@@ -49,6 +51,8 @@ export function Journal() {
 
   const entry = entries[selected];
   const trend = moodTrend(entries, 30);
+  const habits = useHabitsStore((s) => s.habits);
+  const toggleCheckin = useHabitsStore((s) => s.toggleCheckin);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -83,6 +87,30 @@ export function Journal() {
             </button>
           ))}
         </div>
+
+        {habits.length > 0 && (
+          <div className="flex flex-col gap-2">
+            <p className="text-xs font-medium uppercase tracking-wide text-ink-400">Habits that day</p>
+            <div className="flex flex-wrap gap-1.5">
+              {habits.map((h) => {
+                const done = !!h.checkins[selected];
+                return (
+                  <button
+                    key={h.id}
+                    onClick={() => toggleCheckin(h.id, selected)}
+                    className={clsx(
+                      'chip inline-flex items-center gap-1.5',
+                      done && '!bg-honey-400/25 !text-honey-800 dark:!text-honey-200',
+                    )}
+                  >
+                    <span className={clsx('h-1.5 w-1.5 rounded-full', SWATCH_DOT[h.color])} />
+                    {h.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <textarea
           value={content}

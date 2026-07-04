@@ -14,6 +14,7 @@ export interface Note {
   folderId: string;
   tags: string[];
   pinned: boolean;
+  linkedTaskId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,7 +23,7 @@ interface NotesState {
   notes: Note[];
   folders: Folder[];
   addNote: (folderId?: string) => string;
-  updateNote: (id: string, patch: Partial<Pick<Note, 'title' | 'content' | 'folderId' | 'tags'>>) => void;
+  updateNote: (id: string, patch: Partial<Pick<Note, 'title' | 'content' | 'folderId' | 'tags' | 'linkedTaskId'>>) => void;
   deleteNote: (id: string) => void;
   togglePin: (id: string) => void;
   addFolder: (name: string) => string;
@@ -48,6 +49,7 @@ export const useNotesStore = create<NotesState>()(
           folderId,
           tags: [],
           pinned: false,
+          linkedTaskId: null,
           createdAt: now,
           updatedAt: now,
         };

@@ -11,18 +11,21 @@ backup any time from **Settings**.
 
 ## Features
 
-- **Dashboard** — a daily overview: greeting, quote of the day, today's
-  tasks, habit check-ins, upcoming items, and recent notes.
-- **Tasks** — projects, priorities, due dates, quick-add, and smart views
-  (Today / Upcoming / Completed).
-- **Notes** — folders, tags, full-text search, and a Markdown editor with
-  live preview.
+- **Dashboard** — a daily overview: greeting, a daily Latin word and its
+  translation, today's tasks, habit check-ins, upcoming items, and recent
+  notes.
+- **Tasks** — projects, priorities, due dates, quick-add, smart views
+  (Today / Upcoming / Completed), and a badge linking to any note that
+  references the task.
+- **Notes** — folders, tags, full-text search, a Markdown editor with live
+  preview, and an optional link to a task.
 - **Habits** — daily check-ins, current/best streaks, and a GitHub-style
   contribution heatmap per habit.
 - **Focus** — a Pomodoro-style ring timer with configurable focus/break
   lengths, auto-cycling long breaks, and a 7-day history chart.
-- **Journal** — one entry per day with an emoji mood picker, a month
-  calendar colored by mood, and a 30-day mood trend chart.
+- **Journal** — one entry per day with an emoji mood picker, that day's
+  habit check-ins (toggle them right from the entry), a month calendar
+  colored by mood, and a 30-day mood trend chart.
 - **Bookmarks** — a tagged link library with favorites and favicon
   previews.
 - **Finance** — a full personal ledger across four tabs:
@@ -42,8 +45,8 @@ backup any time from **Settings**.
     form; each gets a stable, deterministic color.
 - **Settings** — theme (light/dark/system), accent color (Honey / Ember /
   Moss / Frost), currency, and full data export/import/reset.
-- **Command palette** (`⌘K` / `Ctrl+K`) — jump to any page or run an
-  action without touching the mouse.
+- **Command palette** (`⌘K` / `Ctrl+K`) — jump to any page, run an action,
+  or search across tasks, notes, journal entries, and bookmarks by content.
 - A few Nordic/RPG winks, since "Meadhall" already leans that way: original
   loading-screen tips while a page chunk loads, and a "Skill increased!"
   banner when a habit streak or savings goal hits a milestone.
