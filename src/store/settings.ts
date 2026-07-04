@@ -3,14 +3,18 @@ import { persist } from 'zustand/middleware';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type Accent = 'honey' | 'ember' | 'moss';
+export const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'] as const;
+export type Currency = (typeof CURRENCIES)[number];
 
 interface SettingsState {
   themeMode: ThemeMode;
   accent: Accent;
   displayName: string;
+  currency: Currency;
   setThemeMode: (mode: ThemeMode) => void;
   setAccent: (accent: Accent) => void;
   setDisplayName: (name: string) => void;
+  setCurrency: (currency: Currency) => void;
 }
 
 function applyThemeClass(mode: ThemeMode) {
@@ -28,6 +32,7 @@ export const useSettingsStore = create<SettingsState>()(
       themeMode: 'system',
       accent: 'honey',
       displayName: '',
+      currency: 'USD',
       setThemeMode: (mode) => {
         set({ themeMode: mode });
         applyThemeClass(mode);
@@ -37,6 +42,7 @@ export const useSettingsStore = create<SettingsState>()(
         applyAccentAttr(accent);
       },
       setDisplayName: (displayName) => set({ displayName }),
+      setCurrency: (currency) => set({ currency }),
     }),
     {
       name: 'meadhall:settings',
