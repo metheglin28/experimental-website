@@ -2,6 +2,7 @@ import { type ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { CornerBee } from './CornerBee';
 
 interface ModalProps {
   open: boolean;
@@ -38,8 +39,9 @@ export function Modal({ open, onClose, title, children, maxWidth = 'max-w-md' }:
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 8 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className={`card w-full ${maxWidth} !bg-white p-5 dark:!bg-ink-900`}
+              className={`card relative w-full overflow-hidden ${maxWidth} !bg-white p-5 dark:!bg-ink-900`}
             >
+              <CornerBee size={32} />
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-honey-50">
                   {title}

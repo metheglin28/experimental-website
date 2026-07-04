@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Command, ArrowRight } from 'lucide-react';
 import { LogoMark } from './Logo';
-import { RuneMark } from '@/components/ui/RuneMark';
+import { CornerBee } from '@/components/ui/CornerBee';
 import { useSettingsStore } from '@/store/settings';
 
 export function WelcomeOverlay() {
@@ -24,7 +24,7 @@ export function WelcomeOverlay() {
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="card relative w-full max-w-md overflow-hidden p-8 text-center"
       >
-        <RuneMark rune="ᛟ" className="-right-6 -top-10 text-[11rem]" />
+        <CornerBee size={48} />
         <div className="flex justify-center">
           <LogoMark className="h-14 w-14" />
         </div>
