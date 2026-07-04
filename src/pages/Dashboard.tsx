@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CheckSquare, Flame, Timer, Wallet, ArrowRight, NotebookPen, Quote } from 'lucide-react';
+import { CheckSquare, Flame, Timer, Wallet, ArrowRight, NotebookPen, Languages } from 'lucide-react';
 import { useTasksStore, selectTodayTasks, selectUpcomingTasks } from '@/store/tasks';
 import { useHabitsStore, computeStreak } from '@/store/habits';
 import { useFocusStore } from '@/store/focus';
@@ -9,7 +9,7 @@ import { useSettingsStore } from '@/store/settings';
 import { StatTile } from '@/components/ui/StatTile';
 import { SWATCH_DOT } from '@/lib/colors';
 import { greeting, formatLong, formatFriendly, dayKey, formatTimeAgo } from '@/lib/date';
-import { quoteOfTheDay } from '@/lib/quotes';
+import { latinWordOfTheDay } from '@/lib/latinWord';
 import { useCelebrateOnZero } from '@/lib/celebrate';
 import { CornerBee } from '@/components/ui/CornerBee';
 
@@ -33,7 +33,7 @@ export function Dashboard() {
   const habitsDoneToday = habits.filter((h) => h.checkins[today]).length;
   const net = monthTotals(transactions, currentMonthKey()).income - monthTotals(transactions, currentMonthKey()).expense;
   const recentNotes = [...notes].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 3);
-  const quote = quoteOfTheDay();
+  const latinWord = latinWordOfTheDay();
 
   useCelebrateOnZero(todayTasks.length);
 
@@ -48,10 +48,11 @@ export function Dashboard() {
               {displayName ? `, ${displayName}` : ''}.
             </h2>
           </div>
-          <div className="flex max-w-sm items-start gap-2 rounded-xl bg-honey-400/10 px-3.5 py-2.5 text-sm text-ink-600 dark:text-ink-300">
-            <Quote className="mt-0.5 h-4 w-4 shrink-0 text-honey-500" />
+          <div className="flex max-w-sm items-center gap-2.5 rounded-xl bg-honey-400/10 px-3.5 py-2.5 text-sm text-ink-600 dark:text-ink-300">
+            <Languages className="h-4 w-4 shrink-0 text-honey-500" />
             <p>
-              “{quote.text}” <span className="text-ink-400">— {quote.author}</span>
+              <span className="font-display font-semibold text-ink-800 dark:text-honey-100">{latinWord.word}</span>{' '}
+              <span className="text-ink-400">— {latinWord.translation}</span>
             </p>
           </div>
         </div>
