@@ -1,44 +1,86 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Modal } from '@/components/ui/Modal';
-import { useFinanceStore, EXPENSE_CATEGORIES, INCOME_CATEGORIES, type TxType } from '@/store/finance';
+import { useFinanceStore, allCategories, type TxType, type Transaction } from '@/store/finance';
 import { dayKey } from '@/lib/date';
+
+const ADD_NEW = '__add_new__';
 
 interface TransactionFormModalProps {
   open: boolean;
   onClose: () => void;
+  transaction?: Transaction | null;
+  defaultType?: TxType;
 }
 
-export function TransactionFormModal({ open, onClose }: TransactionFormModalProps) {
+export function TransactionFormModal({ open, onClose, transaction, defaultType }: TransactionFormModalProps) {
   const addTransaction = useFinanceStore((s) => s.addTransaction);
+  const updateTransaction = useFinanceStore((s) => s.updateTransaction);
+  const addCustomCategory = useFinanceStore((s) => s.addCustomCategory);
+  const customCategories = useFinanceStore((s) => s.customCategories);
+
   const [type, setType] = useState<TxType>('expense');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState(EXPENSE_CATEGORIES[0].name);
+  const [category, setCategory] = useState('');
   const [note, setNote] = useState('');
   const [day, setDay] = useState(dayKey());
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [addingCategory, setAddingCategory] = useState(false);
 
-  const categories = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+  const categories = allCategories(type, customCategories);
 
   useEffect(() => {
-    if (open) {
-      setType('expense');
+    if (!open) return;
+    setAddingCategory(false);
+    setNewCategoryName('');
+    if (transaction) {
+      setType(transaction.type);
+      setAmount(String(transaction.amount));
+      setCategory(transaction.category);
+      setNote(transaction.note);
+      setDay(transaction.day);
+    } else {
+      const t = defaultType ?? 'expense';
+      setType(t);
       setAmount('');
-      setCategory(EXPENSE_CATEGORIES[0].name);
+      setCategory(allCategories(t, customCategories)[0].name);
       setNote('');
       setDay(dayKey());
     }
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, transaction, defaultType]);
+
+  function handleCategoryChange(value: string) {
+    if (value === ADD_NEW) {
+      setAddingCategory(true);
+      return;
+    }
+    setCategory(value);
+  }
+
+  function commitNewCategory() {
+    if (newCategoryName.trim()) {
+      addCustomCategory(type, newCategoryName.trim());
+      setCategory(newCategoryName.trim());
+    }
+    setAddingCategory(false);
+    setNewCategoryName('');
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount);
-    if (!value || value <= 0) return;
-    addTransaction({ type, amount: value, category, note, day });
+    if (!value || value <= 0 || !category) return;
+    if (transaction) {
+      updateTransaction(transaction.id, { type, amount: value, category, note, day });
+    } else {
+      addTransaction({ type, amount: value, category, note, day });
+    }
     onClose();
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New transaction">
+    <Modal open={open} onClose={onClose} title={transaction ? 'Edit transaction' : 'New transaction'}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex gap-1 rounded-xl border border-ink-200 p-1 dark:border-ink-800">
           {(['expense', 'income'] as TxType[]).map((t) => (
@@ -47,7 +89,7 @@ export function TransactionFormModal({ open, onClose }: TransactionFormModalProp
               type="button"
               onClick={() => {
                 setType(t);
-                setCategory((t === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES)[0].name);
+                setCategory(allCategories(t, customCategories)[0].name);
               }}
               className={clsx(
                 'flex-1 rounded-lg py-1.5 text-sm font-medium capitalize transition',
@@ -81,13 +123,35 @@ export function TransactionFormModal({ open, onClose }: TransactionFormModalProp
 
         <label className="flex flex-col gap-1 text-xs font-medium text-ink-500">
           Category
-          <select className="input" value={category} onChange={(e) => setCategory(e.target.value)}>
-            {categories.map((c) => (
-              <option key={c.name} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          {addingCategory ? (
+            <div className="flex gap-2">
+              <input
+                autoFocus
+                className="input"
+                placeholder="New category name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    commitNewCategory();
+                  }
+                }}
+              />
+              <button type="button" onClick={commitNewCategory} className="btn-secondary shrink-0 px-3">
+                Add
+              </button>
+            </div>
+          ) : (
+            <select className="input" value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
+              {categories.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+              <option value={ADD_NEW}>+ Add new category…</option>
+            </select>
+          )}
         </label>
 
         <input
@@ -102,7 +166,7 @@ export function TransactionFormModal({ open, onClose }: TransactionFormModalProp
             Cancel
           </button>
           <button type="submit" className="btn-primary">
-            Add transaction
+            {transaction ? 'Save changes' : 'Add transaction'}
           </button>
         </div>
       </form>

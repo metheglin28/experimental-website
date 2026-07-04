@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pencil, Check } from 'lucide-react';
 import clsx from 'clsx';
-import { useFinanceStore, EXPENSE_CATEGORIES, formatCurrency } from '@/store/finance';
+import { useFinanceStore, colorForCategory, formatCurrency } from '@/store/finance';
 import { SWATCH_DOT } from '@/lib/colors';
 
 interface CategoryBreakdownProps {
@@ -28,7 +28,7 @@ export function CategoryBreakdown({ data, currency }: CategoryBreakdownProps) {
   return (
     <div className="flex flex-col gap-3">
       {data.map(({ category, total }) => {
-        const color = EXPENSE_CATEGORIES.find((c) => c.name === category)?.color ?? 'honey';
+        const color = colorForCategory(category);
         const budget = budgets[category];
         const pct = budget ? Math.min(100, Math.round((total / budget) * 100)) : null;
         const over = budget != null && total > budget;

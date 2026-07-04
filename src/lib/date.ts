@@ -11,6 +11,16 @@ export function addDays(key: string, delta: number): string {
   return dayKey(dt);
 }
 
+export function addMonths(key: string, delta: number): string {
+  const [y, m, d] = key.split('-').map(Number);
+  const dt = new Date(y, m - 1 + delta, d);
+  return dayKey(dt);
+}
+
+export function addYears(key: string, delta: number): string {
+  return addMonths(key, delta * 12);
+}
+
 export function daysBetween(a: string, b: string): number {
   const [ay, am, ad] = a.split('-').map(Number);
   const [by, bm, bd] = b.split('-').map(Number);

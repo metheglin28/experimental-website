@@ -25,9 +25,21 @@ backup any time from **Settings**.
   calendar colored by mood, and a 30-day mood trend chart.
 - **Bookmarks** — a tagged link library with favorites and favicon
   previews.
-- **Finance** — income/expense tracking, monthly stat tiles, an
-  income-vs-expense trend chart, and per-category budgets with progress
-  bars.
+- **Finance** — a full personal ledger across four tabs:
+  - *Overview*: spending insights (month-over-month change, top category,
+    average daily spend), stat tiles, an income-vs-expense trend chart
+    (3/6/12-month toggle), category budgets with progress bars, and an
+    upcoming-bills preview.
+  - *All Transactions*: a searchable, filterable ledger (by type, category,
+    or month) with inline edit/delete and CSV export.
+  - *Recurring*: subscriptions and bills with weekly/monthly/yearly
+    frequency, due-date badges, and a one-click "mark paid" that logs the
+    transaction and rolls the due date forward.
+  - *Goals*: savings goals with progress bars and a contribution flow —
+    hitting a goal triggers the same confetti celebration as a habit
+    streak.
+  - Custom categories can be added inline from any transaction/recurring
+    form; each gets a stable, deterministic color.
 - **Settings** — theme (light/dark/system), accent color, currency, and
   full data export/import/reset.
 - **Command palette** (`⌘K` / `Ctrl+K`) — jump to any page or run an
