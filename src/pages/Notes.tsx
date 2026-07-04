@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, NotebookPen, FolderPlus } from 'lucide-react';
 import clsx from 'clsx';
 import { useNotesStore } from '@/store/notes';
@@ -18,6 +19,22 @@ export function Notes() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [addingFolder, setAddingFolder] = useState(false);
   const [folderName, setFolderName] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const noteId = searchParams.get('note');
+    if (!noteId) return;
+    setSelectedId(noteId);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('note');
+        return next;
+      },
+      { replace: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

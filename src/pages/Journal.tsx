@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { useJournalStore, moodTrend, MOOD_EMOJI, MOOD_LABEL, type Mood } from '@/store/journal';
 import { MiniCalendar } from '@/components/journal/MiniCalendar';
@@ -13,6 +14,22 @@ export function Journal() {
 
   const [selected, setSelected] = useState(dayKey());
   const [content, setContent] = useState(entries[selected]?.content ?? '');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const day = searchParams.get('day');
+    if (!day) return;
+    setSelected(day);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('day');
+        return next;
+      },
+      { replace: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     setContent(entries[selected]?.content ?? '');

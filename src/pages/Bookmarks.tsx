@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, Bookmark as BookmarkIcon, Star } from 'lucide-react';
 import clsx from 'clsx';
 import { useBookmarksStore, type Bookmark } from '@/store/bookmarks';
@@ -13,6 +14,22 @@ export function Bookmarks() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Bookmark | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q == null) return;
+    setQuery(q);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('q');
+        return next;
+      },
+      { replace: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const allTags = useMemo(() => {
     const set = new Set<string>();

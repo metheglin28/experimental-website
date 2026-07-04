@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Sun, Moon, Laptop, Download } from 'lucide-react';
+import { Search, Sun, Moon, Laptop, Download, CheckSquare, NotebookPen, BookOpen, Bookmark as BookmarkIcon } from 'lucide-react';
 import { NAV_ITEMS, SETTINGS_ITEM } from '@/lib/nav';
 import { useSettingsStore } from '@/store/settings';
 import { downloadBackup } from '@/lib/backup';
+import { useTasksStore } from '@/store/tasks';
+import { useNotesStore } from '@/store/notes';
+import { useJournalStore } from '@/store/journal';
+import { useBookmarksStore, hostnameOf } from '@/store/bookmarks';
+import { formatFriendly } from '@/lib/date';
 
 interface Command {
   id: string;
@@ -21,12 +26,21 @@ interface CommandPaletteProps {
   onClose: () => void;
 }
 
+function snippet(text: string, len = 44): string {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  return clean.length > len ? `${clean.slice(0, len)}…` : clean;
+}
+
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const setThemeMode = useSettingsStore((s) => s.setThemeMode);
+  const tasks = useTasksStore((s) => s.tasks);
+  const notes = useNotesStore((s) => s.notes);
+  const journalEntries = useJournalStore((s) => s.entries);
+  const bookmarks = useBookmarksStore((s) => s.bookmarks);
 
   const commands = useMemo<Command[]>(() => {
     const navCommands: Command[] = [...NAV_ITEMS, SETTINGS_ITEM].map((item) => ({
@@ -72,13 +86,85 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
     return [...navCommands, ...actionCommands];
   }, [navigate, setThemeMode]);
 
+  const contentCommands = useMemo<Command[]>(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    const results: Command[] = [];
+
+    tasks
+      .filter((t) => t.title.toLowerCase().includes(q) || t.notes.toLowerCase().includes(q))
+      .slice(0, 5)
+      .forEach((t) =>
+        results.push({
+          id: `task-${t.id}`,
+          label: t.title,
+          hint: t.done ? 'Done' : t.dueDate ? formatFriendly(t.dueDate) : undefined,
+          group: 'Tasks',
+          icon: CheckSquare,
+          run: () => navigate(`/tasks?task=${t.id}`),
+        }),
+      );
+
+    notes
+      .filter((n) => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q))
+      .slice(0, 5)
+      .forEach((n) =>
+        results.push({
+          id: `note-${n.id}`,
+          label: n.title || 'Untitled note',
+          hint: snippet(n.content),
+          group: 'Notes',
+          icon: NotebookPen,
+          run: () => navigate(`/notes?note=${n.id}`),
+        }),
+      );
+
+    Object.values(journalEntries)
+      .filter((e) => e.content.toLowerCase().includes(q))
+      .sort((a, b) => (a.day < b.day ? 1 : -1))
+      .slice(0, 5)
+      .forEach((e) =>
+        results.push({
+          id: `journal-${e.day}`,
+          label: formatFriendly(e.day),
+          hint: snippet(e.content),
+          group: 'Journal',
+          icon: BookOpen,
+          run: () => navigate(`/journal?day=${e.day}`),
+        }),
+      );
+
+    bookmarks
+      .filter(
+        (b) =>
+          b.title.toLowerCase().includes(q) ||
+          b.url.toLowerCase().includes(q) ||
+          b.notes.toLowerCase().includes(q) ||
+          b.tags.some((t) => t.toLowerCase().includes(q)),
+      )
+      .slice(0, 5)
+      .forEach((b) =>
+        results.push({
+          id: `bookmark-${b.id}`,
+          label: b.title,
+          hint: hostnameOf(b.url),
+          group: 'Bookmarks',
+          icon: BookmarkIcon,
+          run: () => navigate(`/bookmarks?q=${encodeURIComponent(b.title)}`),
+        }),
+      );
+
+    return results;
+  }, [query, tasks, notes, journalEntries, bookmarks, navigate]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return commands;
-    return commands.filter((c) =>
+    const staticMatches = commands.filter((c) =>
       `${c.label} ${c.hint ?? ''} ${c.keywords ?? ''}`.toLowerCase().includes(q),
     );
-  }, [commands, query]);
+    return [...contentCommands, ...staticMatches];
+  }, [commands, contentCommands, query]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -140,7 +226,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Search pages or run a command…"
+                  placeholder="Search tasks, notes, journal, bookmarks, or run a command…"
                   className="flex-1 bg-transparent text-sm text-ink-900 outline-none placeholder:text-ink-400 dark:text-ink-100"
                 />
                 <kbd className="rounded border border-ink-200 px-1.5 py-0.5 text-[10px] text-ink-400 dark:border-ink-700">

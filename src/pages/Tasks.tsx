@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Plus, ListTodo } from 'lucide-react';
 import { useTasksStore, type Task } from '@/store/tasks';
@@ -20,8 +21,28 @@ export function Tasks() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const addTask = useTasksStore((s) => s.addTask);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const today = dayKey();
+
+  useEffect(() => {
+    const taskId = searchParams.get('task');
+    if (!taskId) return;
+    const target = tasks.find((t) => t.id === taskId);
+    if (target) {
+      setEditing(target);
+      setModalOpen(true);
+    }
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('task');
+        return next;
+      },
+      { replace: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const counts = useMemo(() => {
     const byProject: Record<string, number> = {};
