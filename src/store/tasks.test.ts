@@ -13,6 +13,7 @@ function task(overrides: Partial<Task>): Task {
     dueDate: null,
     priority: 'medium',
     projectId: 'inbox',
+    recurrence: 'none',
     order: 0,
     ...overrides,
   };

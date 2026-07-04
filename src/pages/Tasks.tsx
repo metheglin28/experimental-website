@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, Reorder } from 'framer-motion';
 import { Plus, ListTodo } from 'lucide-react';
 import { useTasksStore, type Task } from '@/store/tasks';
 import { ProjectRail, type ViewFilter } from '@/components/tasks/ProjectRail';
@@ -21,6 +21,7 @@ export function Tasks() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
   const addTask = useTasksStore((s) => s.addTask);
+  const reorderWithin = useTasksStore((s) => s.reorderWithin);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const today = dayKey();
@@ -129,7 +130,7 @@ export function Tasks() {
                 : 'Add a task above, or take a well-earned break.'
             }
           />
-        ) : (
+        ) : view === 'completed' ? (
           <div className="flex flex-col gap-2">
             <AnimatePresence initial={false}>
               {visible.map((task) => (
@@ -144,6 +145,28 @@ export function Tasks() {
               ))}
             </AnimatePresence>
           </div>
+        ) : (
+          <Reorder.Group
+            as="div"
+            axis="y"
+            values={visible}
+            onReorder={(next) => reorderWithin(next.map((t) => t.id))}
+            className="flex flex-col gap-2"
+          >
+            <AnimatePresence initial={false}>
+              {visible.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  reorderable
+                  onEdit={(t) => {
+                    setEditing(t);
+                    setModalOpen(true);
+                  }}
+                />
+              ))}
+            </AnimatePresence>
+          </Reorder.Group>
         )}
       </div>
 

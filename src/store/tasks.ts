@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createId } from '@/lib/id';
-import { dayKey } from '@/lib/date';
+import { addDays, addMonths, dayKey } from '@/lib/date';
 import { SWATCH_COLORS, type SwatchColor } from '@/lib/colors';
 
 export type Priority = 'low' | 'medium' | 'high';
+export type Recurrence = 'none' | 'daily' | 'weekly' | 'monthly';
 
 export interface Project {
   id: string;
@@ -22,20 +23,27 @@ export interface Task {
   dueDate: string | null;
   priority: Priority;
   projectId: string | null;
+  recurrence: Recurrence;
   order: number;
 }
 
 interface TasksState {
   tasks: Task[];
   projects: Project[];
-  addTask: (input: Partial<Pick<Task, 'title' | 'dueDate' | 'priority' | 'projectId' | 'notes'>>) => string;
+  addTask: (input: Partial<Pick<Task, 'title' | 'dueDate' | 'priority' | 'projectId' | 'notes' | 'recurrence'>>) => string;
   updateTask: (id: string, patch: Partial<Task>) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
-  reorder: (id: string, beforeId: string | null) => void;
+  reorderWithin: (orderedIds: string[]) => void;
   addProject: (name: string, color: SwatchColor) => string;
   updateProject: (id: string, patch: Partial<Project>) => void;
   deleteProject: (id: string) => void;
+}
+
+function advanceDueDate(dueDate: string, recurrence: Recurrence): string {
+  if (recurrence === 'daily') return addDays(dueDate, 1);
+  if (recurrence === 'weekly') return addDays(dueDate, 7);
+  return addMonths(dueDate, 1);
 }
 
 export const PROJECT_COLORS = SWATCH_COLORS;
@@ -63,6 +71,7 @@ export const useTasksStore = create<TasksState>()(
           dueDate: input.dueDate ?? null,
           priority: input.priority ?? 'medium',
           projectId: input.projectId ?? 'inbox',
+          recurrence: input.recurrence ?? 'none',
           order: tasks.length ? Math.max(...tasks.map((t) => t.order)) + 1 : 0,
         };
         set({ tasks: [...tasks, task] });
@@ -72,25 +81,41 @@ export const useTasksStore = create<TasksState>()(
       updateTask: (id, patch) =>
         set({ tasks: get().tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)) }),
 
-      toggleTask: (id) =>
+      toggleTask: (id) => {
+        const task = get().tasks.find((t) => t.id === id);
+        if (task && !task.done && task.recurrence !== 'none' && task.dueDate) {
+          const nextDue = advanceDueDate(task.dueDate, task.recurrence);
+          set({
+            tasks: get().tasks.map((t) =>
+              t.id === id ? { ...t, dueDate: nextDue, completedAt: new Date().toISOString() } : t,
+            ),
+          });
+          return;
+        }
         set({
           tasks: get().tasks.map((t) =>
             t.id === id
               ? { ...t, done: !t.done, completedAt: !t.done ? new Date().toISOString() : null }
               : t,
           ),
-        }),
+        });
+      },
 
       deleteTask: (id) => set({ tasks: get().tasks.filter((t) => t.id !== id) }),
 
-      reorder: (id, beforeId) => {
+      reorderWithin: (orderedIds) => {
         const tasks = [...get().tasks].sort((a, b) => a.order - b.order);
-        const from = tasks.findIndex((t) => t.id === id);
-        if (from === -1) return;
-        const [moved] = tasks.splice(from, 1);
-        const to = beforeId ? tasks.findIndex((t) => t.id === beforeId) : tasks.length;
-        tasks.splice(to === -1 ? tasks.length : to, 0, moved);
-        set({ tasks: tasks.map((t, i) => ({ ...t, order: i })) });
+        const idSet = new Set(orderedIds);
+        const positions: number[] = [];
+        tasks.forEach((t, i) => {
+          if (idSet.has(t.id)) positions.push(i);
+        });
+        const byId = new Map(tasks.map((t) => [t.id, t]));
+        const next = [...tasks];
+        positions.forEach((pos, i) => {
+          next[pos] = byId.get(orderedIds[i])!;
+        });
+        set({ tasks: next.map((t, i) => ({ ...t, order: i })) });
       },
 
       addProject: (name, color) => {

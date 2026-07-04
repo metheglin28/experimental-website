@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Flag, Pencil, Trash2, CalendarDays, NotebookPen } from 'lucide-react';
+import { Reorder, useDragControls, motion } from 'framer-motion';
+import { Flag, Pencil, Trash2, CalendarDays, NotebookPen, Repeat, GripVertical } from 'lucide-react';
 import clsx from 'clsx';
 import { useTasksStore, type Task } from '@/store/tasks';
 import { useNotesStore } from '@/store/notes';
@@ -13,27 +13,37 @@ const PRIORITY_COLOR: Record<Task['priority'], string> = {
   high: 'text-ember-500',
 };
 
+const RECURRENCE_LABEL: Record<Exclude<Task['recurrence'], 'none'>, string> = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+};
+
 interface TaskItemProps {
   task: Task;
   onEdit: (task: Task) => void;
+  reorderable?: boolean;
 }
 
-export function TaskItem({ task, onEdit }: TaskItemProps) {
+export function TaskItem({ task, onEdit, reorderable = false }: TaskItemProps) {
   const toggleTask = useTasksStore((s) => s.toggleTask);
   const deleteTask = useTasksStore((s) => s.deleteTask);
   const project = useTasksStore((s) => s.projects.find((p) => p.id === task.projectId));
   const linkedNote = useNotesStore((s) => s.notes.find((n) => n.linkedTaskId === task.id));
   const overdue = task.dueDate && !task.done && isPast(task.dueDate);
+  const dragControls = useDragControls();
 
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -12 }}
-      transition={{ duration: 0.18 }}
-      className="group card flex items-start gap-3 px-4 py-3"
-    >
+  const inner = (
+    <>
+      {reorderable && (
+        <button
+          onPointerDown={(e) => dragControls.start(e)}
+          aria-label="Drag to reorder"
+          className="mt-0.5 shrink-0 cursor-grab touch-none text-ink-300 opacity-0 transition-opacity active:cursor-grabbing group-hover:opacity-100 dark:text-ink-600"
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+      )}
       <button
         onClick={() => toggleTask(task.id)}
         aria-label={task.done ? 'Mark incomplete' : 'Mark complete'}
@@ -65,6 +75,12 @@ export function TaskItem({ task, onEdit }: TaskItemProps) {
               {formatFriendly(task.dueDate)}
             </span>
           )}
+          {task.recurrence !== 'none' && (
+            <span className="inline-flex items-center gap-1" title={`Repeats ${RECURRENCE_LABEL[task.recurrence].toLowerCase()}`}>
+              <Repeat className="h-3.5 w-3.5" />
+              {RECURRENCE_LABEL[task.recurrence]}
+            </span>
+          )}
           {project && (
             <span className="inline-flex items-center gap-1">
               <span className={clsx('h-1.5 w-1.5 rounded-full', SWATCH_DOT[project.color])} />
@@ -92,6 +108,37 @@ export function TaskItem({ task, onEdit }: TaskItemProps) {
           <Trash2 className="h-3.5 w-3.5" />
         </button>
       </div>
+    </>
+  );
+
+  if (reorderable) {
+    return (
+      <Reorder.Item
+        as="div"
+        value={task}
+        dragListener={false}
+        dragControls={dragControls}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, x: -12 }}
+        transition={{ duration: 0.18 }}
+        className="group card flex items-start gap-3 px-4 py-3"
+      >
+        {inner}
+      </Reorder.Item>
+    );
+  }
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -12 }}
+      transition={{ duration: 0.18 }}
+      className="group card flex items-start gap-3 px-4 py-3"
+    >
+      {inner}
     </motion.div>
   );
 }

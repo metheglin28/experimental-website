@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
-import { useTasksStore, type Priority, type Task } from '@/store/tasks';
+import { useTasksStore, type Priority, type Recurrence, type Task } from '@/store/tasks';
 
 interface TaskFormModalProps {
   open: boolean;
@@ -15,6 +15,13 @@ const PRIORITIES: { value: Priority; label: string }[] = [
   { value: 'high', label: 'High' },
 ];
 
+const RECURRENCES: { value: Recurrence; label: string }[] = [
+  { value: 'none', label: "Doesn't repeat" },
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+];
+
 export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFormModalProps) {
   const projects = useTasksStore((s) => s.projects);
   const addTask = useTasksStore((s) => s.addTask);
@@ -25,6 +32,7 @@ export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFor
   const [dueDate, setDueDate] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
   const [projectId, setProjectId] = useState<string>('inbox');
+  const [recurrence, setRecurrence] = useState<Recurrence>('none');
 
   useEffect(() => {
     if (!open) return;
@@ -33,6 +41,7 @@ export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFor
     setDueDate(task?.dueDate ?? '');
     setPriority(task?.priority ?? 'medium');
     setProjectId(task?.projectId ?? defaultProjectId ?? 'inbox');
+    setRecurrence(task?.recurrence ?? 'none');
   }, [open, task, defaultProjectId]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -45,9 +54,10 @@ export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFor
         dueDate: dueDate || null,
         priority,
         projectId,
+        recurrence,
       });
     } else {
-      addTask({ title, notes, dueDate: dueDate || null, priority, projectId });
+      addTask({ title, notes, dueDate: dueDate || null, priority, projectId, recurrence });
     }
     onClose();
   }
@@ -75,7 +85,10 @@ export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFor
               type="date"
               className="input"
               value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              onChange={(e) => {
+                setDueDate(e.target.value);
+                if (!e.target.value) setRecurrence('none');
+              }}
             />
           </label>
           <label className="flex flex-col gap-1 text-xs font-medium text-ink-500">
@@ -93,16 +106,34 @@ export function TaskFormModal({ open, onClose, task, defaultProjectId }: TaskFor
             </select>
           </label>
         </div>
-        <label className="flex flex-col gap-1 text-xs font-medium text-ink-500">
-          Project
-          <select className="input" value={projectId} onChange={(e) => setProjectId(e.target.value)}>
-            {projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex flex-col gap-1 text-xs font-medium text-ink-500">
+            Project
+            <select className="input" value={projectId} onChange={(e) => setProjectId(e.target.value)}>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-medium text-ink-500">
+            Repeat
+            <select
+              className="input"
+              value={recurrence}
+              onChange={(e) => setRecurrence(e.target.value as Recurrence)}
+              disabled={!dueDate}
+              title={!dueDate ? 'Set a due date to make this task repeat' : undefined}
+            >
+              {RECURRENCES.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="mt-2 flex justify-end gap-2">
           <button type="button" onClick={onClose} className="btn-ghost">
             Cancel
