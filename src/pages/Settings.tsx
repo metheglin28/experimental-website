@@ -10,11 +10,15 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Laptop },
 ];
 
-const ACCENT_OPTIONS: { value: Accent; label: string; dot: string }[] = [
-  { value: 'honey', label: 'Honey', dot: 'bg-honey-400' },
-  { value: 'ember', label: 'Ember', dot: 'bg-ember-400' },
-  { value: 'moss', label: 'Moss', dot: 'bg-moss-400' },
-  { value: 'frost', label: 'Frost', dot: 'bg-frost-400' },
+// Swatch previews use fixed hex values rather than bg-honey-400 etc.
+// because selecting an accent remaps the --color-honey-* variables to
+// that accent's palette app-wide — so the "Honey" swatch itself would
+// silently take on whatever accent was active if it used that class.
+const ACCENT_OPTIONS: { value: Accent; label: string; hex: string }[] = [
+  { value: 'honey', label: 'Honey', hex: '#f6ab33' },
+  { value: 'ember', label: 'Ember', hex: '#f0765a' },
+  { value: 'moss', label: 'Moss', hex: '#8fbc5f' },
+  { value: 'frost', label: 'Frost', hex: '#4ab8db' },
 ];
 
 export function Settings() {
@@ -110,7 +114,7 @@ export function Settings() {
         <div>
           <p className="mb-2 text-xs font-medium text-ink-500">Accent color</p>
           <div className="flex gap-3">
-            {ACCENT_OPTIONS.map(({ value, label, dot }) => (
+            {ACCENT_OPTIONS.map(({ value, label, hex }) => (
               <button
                 key={value}
                 onClick={() => setAccent(value)}
@@ -118,9 +122,9 @@ export function Settings() {
                 title={label}
               >
                 <span
+                  style={{ backgroundColor: hex }}
                   className={clsx(
                     'flex h-9 w-9 items-center justify-center rounded-full ring-offset-2 ring-offset-white transition dark:ring-offset-ink-900',
-                    dot,
                     accent === value && 'ring-2 ring-ink-900 dark:ring-honey-50',
                   )}
                 >
