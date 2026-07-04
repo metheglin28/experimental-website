@@ -61,9 +61,17 @@ backup any time from **Settings**.
   for animation, [Lucide](https://lucide.dev) for icons
 - [react-markdown](https://github.com/remarkjs/react-markdown) +
   `remark-gfm` for the notes editor
+- [vite-plugin-pwa](https://vite-pwa-org.netlify.app) for an installable,
+  offline-capable app (manifest + precaching service worker)
+- [Vitest](https://vitest.dev) for unit tests on the pure date/streak/finance
+  utility functions
 
 Chart colors were checked with a CVD (color-vision-deficiency) palette
 validator for both light and dark surfaces before shipping.
+
+Meadhall is installable — look for the install icon in your browser's
+address bar, or "Add to Home Screen" on mobile. Once installed it works
+fully offline, since everything already lives in `localStorage`.
 
 ## Getting started
 
