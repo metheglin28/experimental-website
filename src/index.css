@@ -1,0 +1,188 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Honey / amber core palette — the "Meadhall" identity */
+  --color-honey-50: #fff9ed;
+  --color-honey-100: #fef1d3;
+  --color-honey-200: #fce0a5;
+  --color-honey-300: #f9c96d;
+  --color-honey-400: #f6ab33;
+  --color-honey-500: #f2900e;
+  --color-honey-600: #d67209;
+  --color-honey-700: #b1550b;
+  --color-honey-800: #8f4310;
+  --color-honey-900: #753810;
+  --color-honey-950: #3f1b07;
+
+  --color-ember-50: #fef4f2;
+  --color-ember-100: #fce3dd;
+  --color-ember-200: #f9c7ba;
+  --color-ember-300: #f4a288;
+  --color-ember-400: #f0765a;
+  --color-ember-500: #e2532f;
+  --color-ember-600: #cd3a1e;
+  --color-ember-700: #a52c17;
+  --color-ember-900: #5c1c10;
+  --color-ember-950: #360f09;
+
+  --color-moss-50: #f2f8ee;
+  --color-moss-100: #e1efd7;
+  --color-moss-200: #c2dfaf;
+  --color-moss-300: #a3cb85;
+  --color-moss-400: #8fbc5f;
+  --color-moss-500: #6f9d43;
+  --color-moss-600: #567e33;
+  --color-moss-700: #416127;
+  --color-moss-900: #263a18;
+  --color-moss-950: #16220e;
+
+  --color-ink-50: #f7f5f2;
+  --color-ink-100: #ece7e0;
+  --color-ink-200: #d8cfc2;
+  --color-ink-300: #b9ab97;
+  --color-ink-400: #93826c;
+  --color-ink-500: #746452;
+  --color-ink-600: #5b4d40;
+  --color-ink-700: #493e34;
+  --color-ink-800: #33291f;
+  --color-ink-900: #211a13;
+  --color-ink-950: #140f0a;
+
+  --shadow-warm-sm: 0 1px 2px 0 rgb(63 27 7 / 0.06);
+  --shadow-warm: 0 4px 16px -4px rgb(63 27 7 / 0.12), 0 2px 6px -2px rgb(63 27 7 / 0.08);
+  --shadow-warm-lg: 0 16px 40px -12px rgb(63 27 7 / 0.22), 0 4px 12px -4px rgb(63 27 7 / 0.1);
+  --shadow-glow: 0 0 0 1px rgb(246 171 51 / 0.25), 0 8px 24px -8px rgb(242 144 14 / 0.35);
+
+  --animate-fade-in: fade-in 0.4s ease both;
+  --animate-rise: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-pulse-slow: pulse-slow 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+}
+
+/* Accent theming: swapping data-accent remaps every honey-tinted utility
+   app-wide, since Tailwind v4 theme colors compile down to var() reads. */
+:root[data-accent='ember'] {
+  --color-honey-50: var(--color-ember-50);
+  --color-honey-100: var(--color-ember-100);
+  --color-honey-200: var(--color-ember-200);
+  --color-honey-300: var(--color-ember-300);
+  --color-honey-400: var(--color-ember-400);
+  --color-honey-500: var(--color-ember-500);
+  --color-honey-600: var(--color-ember-600);
+  --color-honey-700: var(--color-ember-700);
+  --color-honey-900: var(--color-ember-900);
+  --color-honey-950: var(--color-ember-950);
+}
+:root[data-accent='moss'] {
+  --color-honey-50: var(--color-moss-50);
+  --color-honey-100: var(--color-moss-100);
+  --color-honey-200: var(--color-moss-200);
+  --color-honey-300: var(--color-moss-300);
+  --color-honey-400: var(--color-moss-400);
+  --color-honey-500: var(--color-moss-500);
+  --color-honey-600: var(--color-moss-600);
+  --color-honey-700: var(--color-moss-700);
+  --color-honey-900: var(--color-moss-900);
+  --color-honey-950: var(--color-moss-950);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-ink-200);
+  }
+  .dark * {
+    border-color: var(--color-ink-800);
+  }
+
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-honey-50 text-ink-900 antialiased;
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(246 171 51 / 0.12), transparent);
+    background-attachment: fixed;
+  }
+  .dark body {
+    @apply bg-ink-950 text-ink-100;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(242 144 14 / 0.08), transparent);
+  }
+
+  ::selection {
+    background: var(--color-honey-300);
+    color: var(--color-ink-950);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-300/60 dark:bg-ink-700/60 rounded-full;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-honey-500/70;
+  }
+}
+
+@utility card {
+  @apply relative rounded-2xl border border-ink-200/70 bg-white/80 shadow-warm-sm backdrop-blur-sm dark:border-ink-800/70 dark:bg-ink-900/60;
+}
+
+@utility btn {
+  @apply inline-flex select-none items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-150 ease-out active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-gradient-to-b from-honey-400 to-honey-500 text-honey-950 shadow-warm hover:shadow-glow hover:from-honey-300 hover:to-honey-400;
+}
+@utility btn-secondary {
+  @apply btn bg-ink-100 text-ink-700 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-200 dark:hover:bg-ink-700;
+}
+@utility btn-ghost {
+  @apply btn text-ink-500 hover:bg-ink-900/5 dark:text-ink-400 dark:hover:bg-white/5;
+}
+@utility btn-danger {
+  @apply btn bg-ember-500/10 text-ember-600 hover:bg-ember-500/20 dark:text-ember-400;
+}
+
+@utility input {
+  @apply w-full rounded-xl border border-ink-200 bg-white/90 px-3.5 py-2 text-sm text-ink-900 placeholder:text-ink-400 outline-none transition focus:border-honey-400 focus:ring-4 focus:ring-honey-400/15 dark:border-ink-700 dark:bg-ink-900/80 dark:text-ink-100 dark:focus:border-honey-500;
+}
+
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-ink-200 bg-ink-50 px-2.5 py-0.5 text-xs font-medium text-ink-600 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-300;
+}
+
+@utility icon-btn {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-400 transition hover:bg-ink-900/5 hover:text-ink-700 dark:hover:bg-white/10 dark:hover:text-ink-100;
+}
