@@ -16,6 +16,8 @@ export function Journal() {
 
   useEffect(() => {
     setContent(entries[selected]?.content ?? '');
+    // Deliberately re-run only when switching days, not on every edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
   useEffect(() => {

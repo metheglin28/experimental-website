@@ -27,6 +27,8 @@ export function NoteEditor({ note, onBack, onDelete }: NoteEditorProps) {
     setContent(note.content);
     setTagsInput(note.tags.join(', '));
     setMode('write');
+    // Deliberately re-run only when switching notes, not on every edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [note.id]);
 
   useEffect(() => {
