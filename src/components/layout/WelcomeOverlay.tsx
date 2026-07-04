@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Command, ArrowRight } from 'lucide-react';
 import { LogoMark } from './Logo';
+import { RuneMark } from '@/components/ui/RuneMark';
 import { useSettingsStore } from '@/store/settings';
 
 export function WelcomeOverlay() {
@@ -21,8 +22,9 @@ export function WelcomeOverlay() {
         initial={{ opacity: 0, y: 12, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="card w-full max-w-md p-8 text-center"
+        className="card relative w-full max-w-md overflow-hidden p-8 text-center"
       >
+        <RuneMark rune="ᛟ" className="-right-6 -top-10 text-[11rem]" />
         <div className="flex justify-center">
           <LogoMark className="h-14 w-14" />
         </div>

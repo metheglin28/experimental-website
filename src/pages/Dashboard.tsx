@@ -11,6 +11,7 @@ import { SWATCH_DOT } from '@/lib/colors';
 import { greeting, formatLong, formatFriendly, dayKey, formatTimeAgo } from '@/lib/date';
 import { quoteOfTheDay } from '@/lib/quotes';
 import { useCelebrateOnZero } from '@/lib/celebrate';
+import { RuneMark } from '@/components/ui/RuneMark';
 
 export function Dashboard() {
   const tasks = useTasksStore((s) => s.tasks);
@@ -38,7 +39,8 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="card overflow-hidden p-6">
+      <div className="card relative overflow-hidden p-6">
+        <RuneMark rune="ᛞ" className="-left-6 -top-12 text-[9rem]" />
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <p className="text-sm font-medium text-honey-600 dark:text-honey-400">{formatLong(today)}</p>
