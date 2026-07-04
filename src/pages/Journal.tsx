@@ -1,3 +1,77 @@
+import { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { useJournalStore, moodTrend, MOOD_EMOJI, MOOD_LABEL, type Mood } from '@/store/journal';
+import { MiniCalendar } from '@/components/journal/MiniCalendar';
+import { MoodChart } from '@/components/journal/MoodChart';
+import { dayKey, formatLong } from '@/lib/date';
+
+const MOODS: Mood[] = [1, 2, 3, 4, 5];
+
 export function Journal() {
-  return <div>Journal placeholder</div>;
+  const entries = useJournalStore((s) => s.entries);
+  const upsertEntry = useJournalStore((s) => s.upsertEntry);
+
+  const [selected, setSelected] = useState(dayKey());
+  const [content, setContent] = useState(entries[selected]?.content ?? '');
+
+  useEffect(() => {
+    setContent(entries[selected]?.content ?? '');
+  }, [selected]);
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      if (content !== (entries[selected]?.content ?? '')) {
+        upsertEntry(selected, { content });
+      }
+    }, 400);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
+
+  const entry = entries[selected];
+  const trend = moodTrend(entries, 30);
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="flex flex-col gap-6">
+        <MiniCalendar entries={entries} selected={selected} onSelect={setSelected} />
+        <div className="card p-4">
+          <h3 className="mb-2 font-display text-sm font-semibold text-ink-700 dark:text-ink-200">Mood, last 30 days</h3>
+          <MoodChart data={trend} />
+        </div>
+      </div>
+
+      <div className="card flex flex-col gap-4 p-5">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-400">Entry for</p>
+          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-honey-50">{formatLong(selected)}</h2>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {MOODS.map((m) => (
+            <button
+              key={m}
+              onClick={() => upsertEntry(selected, { mood: entry?.mood === m ? null : m })}
+              title={MOOD_LABEL[m]}
+              className={clsx(
+                'flex h-11 w-11 items-center justify-center rounded-full text-xl transition',
+                entry?.mood === m
+                  ? 'bg-honey-400/25 ring-2 ring-honey-500'
+                  : 'bg-ink-100 hover:bg-ink-200 dark:bg-ink-800 dark:hover:bg-ink-700',
+              )}
+            >
+              {MOOD_EMOJI[m]}
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="What happened today? What are you grateful for? Write freely…"
+          className="min-h-[300px] flex-1 resize-none rounded-xl border border-ink-200 bg-white/60 p-4 text-sm leading-relaxed text-ink-800 outline-none focus:border-honey-400 focus:ring-4 focus:ring-honey-400/15 dark:border-ink-700 dark:bg-ink-900/40 dark:text-ink-200"
+        />
+      </div>
+    </div>
+  );
 }
