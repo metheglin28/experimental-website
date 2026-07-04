@@ -45,7 +45,7 @@ const MONTH_LABELS = [
 export function formatFriendly(key: string): string {
   const [y, m, d] = key.split('-').map(Number);
   const date = new Date(y, m - 1, d);
-  const diff = daysBetween(key, dayKey());
+  const diff = daysBetween(dayKey(), key);
   if (diff === 0) return 'Today';
   if (diff === 1) return 'Tomorrow';
   if (diff === -1) return 'Yesterday';
